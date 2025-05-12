@@ -1,14 +1,15 @@
-package com.ecommerce.productservice.models;
+package com.ecommerce.productservice.dtos;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class Product extends BaseModel {
+public class CreateProductRequestDto {
+    private Long id;
     private String title;
     private Double price;
     private String description;
     private String image;
-    private Category category;
+    private String category;
 }
