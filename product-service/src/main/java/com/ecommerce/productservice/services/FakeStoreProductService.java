@@ -4,18 +4,17 @@ import com.ecommerce.productservice.dtos.CreateProductRequestDto;
 import com.ecommerce.productservice.dtos.FakeStoreProductDto;
 import com.ecommerce.productservice.models.Category;
 import com.ecommerce.productservice.models.Product;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FakeStoreProductService implements  ProductService{
-    private RestTemplate client;
+    private final RestTemplate client;
 
     public FakeStoreProductService(RestTemplate client) {
         this.client = client;
@@ -34,20 +33,16 @@ public class FakeStoreProductService implements  ProductService{
 
     @Override
     public List<Product> getAllProducts() {
-        ParameterizedTypeReference<List<FakeStoreProductDto>> responseType = new ParameterizedTypeReference<>() {};
-
-        ResponseEntity<List<FakeStoreProductDto>> fakeStoreProductDtoResponse = this.client.exchange(
+        ResponseEntity<FakeStoreProductDto[]> fakeStoreProductDtoResponse = this.client.getForEntity(
                 "https://fakestoreapi.com/products",
-                HttpMethod.GET,
-                null,
-                responseType);
-        List<FakeStoreProductDto> fakeStoreProductsDto = fakeStoreProductDtoResponse.getBody();
+                FakeStoreProductDto[].class);
+        FakeStoreProductDto[] fakeStoreProductsDto = fakeStoreProductDtoResponse.getBody();
 
-        if (fakeStoreProductsDto == null || fakeStoreProductsDto.isEmpty()) {
-            return null;
+        if (fakeStoreProductsDto == null) {
+            return new ArrayList<>();
         }
 
-        return fakeStoreProductsDto.stream()
+        return Arrays.stream(fakeStoreProductsDto)
                 .map(FakeStoreProductService::convertFakeStoreProductDtoToProduct)
                 .toList();
     }
@@ -64,8 +59,9 @@ public class FakeStoreProductService implements  ProductService{
     }
 
     @Override
-    public boolean deleteProduct(Long productId) {
-        return false;
+    public ResponseEntity<Void> deleteProduct(Long productId) {
+        this.client.delete("https://fakestoreapi.com/products/" + productId);
+        return ResponseEntity.ok().build();
     }
 
     public static Product convertFakeStoreProductDtoToProduct(FakeStoreProductDto fakeStoreProductDto) {

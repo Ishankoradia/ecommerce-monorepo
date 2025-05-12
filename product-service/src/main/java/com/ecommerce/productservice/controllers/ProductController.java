@@ -36,7 +36,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable("id") Long productId){
-        return null;
+        return this.productService.deleteProduct(productId);
     }
 
     @PatchMapping("/{id}")
