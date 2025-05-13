@@ -2,6 +2,7 @@ package com.ecommerce.productservice.services;
 
 import com.ecommerce.productservice.dtos.CreateProductRequestDto;
 import com.ecommerce.productservice.dtos.FakeStoreProductDto;
+import com.ecommerce.productservice.exceptions.ProductNotFoundException;
 import com.ecommerce.productservice.models.Category;
 import com.ecommerce.productservice.models.Product;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +22,18 @@ public class FakeStoreProductService implements  ProductService{
     }
 
     @Override
-    public Product getSingleProduct(Long productId){
-
+    public Product getSingleProduct(Long productId) throws ProductNotFoundException {
         ResponseEntity<FakeStoreProductDto> fakeStoreProductDtoResponse = this.client.getForEntity(
                 "https://fakestoreapi.com/products/" + productId,
                 FakeStoreProductDto.class);
         FakeStoreProductDto fakeStoreProductDto = fakeStoreProductDtoResponse.getBody();
+
+        if (fakeStoreProductDto == null) {
+            throw new ProductNotFoundException(
+                    "Product with id " + productId + " does not exist",
+                    "Please try again with a different product id",
+                    productId);
+        }
 
         return convertFakeStoreProductDtoToProduct(fakeStoreProductDto);
     }
