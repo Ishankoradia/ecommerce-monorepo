@@ -55,15 +55,20 @@ public class FakeStoreProductService implements  ProductService{
                 .toList();
     }
 
-    @Override
-    public Product createProduct(CreateProductRequestDto createProductRequestDto) {
-        ResponseEntity<FakeStoreProductDto> fakeStoreProductDtoResponse =  this.client.postForEntity(
-                "https://fakestoreapi.com/products",
-                createProductRequestDto,
-                FakeStoreProductDto.class);
-        FakeStoreProductDto fakeStoreProductDto = fakeStoreProductDtoResponse.getBody();
+//    @Override
+//    public Product createProduct(CreateProductRequestDto createProductRequestDto) {
+//        ResponseEntity<FakeStoreProductDto> fakeStoreProductDtoResponse =  this.client.postForEntity(
+//                "https://fakestoreapi.com/products",
+//                createProductRequestDto,
+//                FakeStoreProductDto.class);
+//        FakeStoreProductDto fakeStoreProductDto = fakeStoreProductDtoResponse.getBody();
+//
+//        return convertFakeStoreProductDtoToProduct(fakeStoreProductDto);
+//    }
 
-        return convertFakeStoreProductDtoToProduct(fakeStoreProductDto);
+    @Override
+    public Product createProduct(Product product) {
+        return null;
     }
 
     @Override

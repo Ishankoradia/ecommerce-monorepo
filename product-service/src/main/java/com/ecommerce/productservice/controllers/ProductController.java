@@ -1,6 +1,7 @@
 package com.ecommerce.productservice.controllers;
 
 import com.ecommerce.productservice.dtos.CreateProductRequestDto;
+import com.ecommerce.productservice.exceptions.CategoryNotFoundException;
 import com.ecommerce.productservice.exceptions.ProductNotFoundException;
 import com.ecommerce.productservice.models.Product;
 import com.ecommerce.productservice.services.ProductService;
@@ -18,13 +19,12 @@ public class ProductController {
 
     private ProductService productService;
 
-    public ProductController(@Qualifier("fakeStoreProductService") ProductService productService) {
+    public ProductController(@Qualifier("dbProductService") ProductService productService) {
         this.productService = productService;
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Product> getSingleProduct(@PathVariable("id") Long productId) throws ProductNotFoundException {
-
         return new ResponseEntity<>(
                 this.productService.getSingleProduct(productId),
                 HttpStatus.OK);
@@ -36,7 +36,7 @@ public class ProductController {
     }
 
     @PostMapping("/")
-    public Product createProduct(@RequestBody CreateProductRequestDto product) {
+    public Product createProduct(@RequestBody Product product) throws CategoryNotFoundException {
         return this.productService.createProduct(product);
     }
 

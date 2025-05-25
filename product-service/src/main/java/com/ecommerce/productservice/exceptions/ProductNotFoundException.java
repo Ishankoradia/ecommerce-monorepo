@@ -4,7 +4,11 @@ import lombok.Getter;
 
 @Getter
 public class ProductNotFoundException extends BaseException {
-    private final Long productId;
+    private Long productId = null;
+
+    public ProductNotFoundException(String message, String details) {
+        super(message, details);
+    }
 
     public ProductNotFoundException(String message, String details, Long productId) {
         super(message, details);
