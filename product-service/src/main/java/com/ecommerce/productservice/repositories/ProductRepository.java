@@ -3,6 +3,7 @@ package com.ecommerce.productservice.repositories;
 import com.ecommerce.productservice.models.Category;
 import com.ecommerce.productservice.models.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -28,9 +29,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     
     List<Product> findByCategory_Title(String categoryTitle);
 
-//    @Query("select title from products where id = ?")
-//    Optional<Product> findOnlyProductTitleById(Long productId);
-
     // upsert
     Product save(Product entity);
 
@@ -42,9 +40,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     int deleteAllByCategory_Title(String categoryTitle);
 
-    @Query(value = "delete from products p where p.category.id = :categoryId")
+    @Modifying
+    @Query(value = "delete from products p where p.id in (select c.id from categories c where c.id= :categoryId)")
     void deleteProductWhereIdMatchesCategoryId(@Param("categoryId") Long categoryId);
 
+    @Modifying
     @Query(value = "delete from products p where p.createdAt <= :retainDate")
     int retainProductsAfter(Date retainDate);
 }
