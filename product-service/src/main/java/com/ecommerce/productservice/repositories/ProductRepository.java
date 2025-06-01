@@ -29,6 +29,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     
     List<Product> findByCategory_Title(String categoryTitle);
 
+    List<Product> findAllByIdBetween(Long idAfter, Long idBefore);
+
+    List<Product> findAllByTitleEquals(String title);
+    
     // upsert
     Product save(Product entity);
 
