@@ -1,7 +1,9 @@
 package com.ecommerce.productservice.services;
 
 import com.ecommerce.productservice.dtos.CreateProductRequestDto;
-import com.ecommerce.productservice.dtos.FakeStoreProductDto;
+import com.ecommerce.productservice.dtos.fakeStore.CreateFakeStoreProductRequestDto;
+import com.ecommerce.productservice.dtos.fakeStore.FakeStoreProductDto;
+import com.ecommerce.productservice.exceptions.CategoryNotFoundException;
 import com.ecommerce.productservice.exceptions.ProductNotFoundException;
 import com.ecommerce.productservice.models.Category;
 import com.ecommerce.productservice.models.Product;
@@ -36,7 +38,7 @@ public class FakeStoreProductService implements  ProductService{
                     productId);
         }
 
-        return convertFakeStoreProductDtoToProduct(fakeStoreProductDto);
+        return from(fakeStoreProductDto);
     }
 
     @Override
@@ -51,33 +53,39 @@ public class FakeStoreProductService implements  ProductService{
         }
 
         return Arrays.stream(fakeStoreProductsDto)
-                .map(FakeStoreProductService::convertFakeStoreProductDtoToProduct)
+                .map(this::from)
                 .toList();
     }
 
-//    @Override
-//    public Product createProduct(CreateProductRequestDto createProductRequestDto) {
-//        ResponseEntity<FakeStoreProductDto> fakeStoreProductDtoResponse =  this.client.postForEntity(
-//                "https://fakestoreapi.com/products",
-//                createProductRequestDto,
-//                FakeStoreProductDto.class);
-//        FakeStoreProductDto fakeStoreProductDto = fakeStoreProductDtoResponse.getBody();
-//
-//        return convertFakeStoreProductDtoToProduct(fakeStoreProductDto);
-//    }
+    @Override
+    public Product createProduct(CreateProductRequestDto createProductRequestDto) {
+        ResponseEntity<FakeStoreProductDto> fakeStoreProductDtoResponse =  this.client.postForEntity(
+                "https://fakestoreapi.com/products",
+                from(createProductRequestDto),
+                FakeStoreProductDto.class);
+        FakeStoreProductDto fakeStoreProductDto = fakeStoreProductDtoResponse.getBody();
+
+        return from(fakeStoreProductDto);
+    }
+
 
     @Override
-    public Product createProduct(Product product) {
+    public Boolean deleteProduct(Long productId) {
+        this.client.delete("https://fakestoreapi.com/products/" + productId);
+        return true;
+    }
+
+    @Override
+    public Product patchProduct(Long productId, CreateProductRequestDto createProductRequestDto) throws ProductNotFoundException, CategoryNotFoundException {
         return null;
     }
 
     @Override
-    public ResponseEntity<Void> deleteProduct(Long productId) {
-        this.client.delete("https://fakestoreapi.com/products/" + productId);
-        return ResponseEntity.ok().build();
+    public Product replaceProduct(Long productId, CreateProductRequestDto createProductRequestDto) throws ProductNotFoundException, CategoryNotFoundException {
+        return null;
     }
 
-    public static Product convertFakeStoreProductDtoToProduct(FakeStoreProductDto fakeStoreProductDto) {
+    private Product from(FakeStoreProductDto fakeStoreProductDto) {
         if (fakeStoreProductDto == null) {
             return null;
         }
@@ -94,5 +102,20 @@ public class FakeStoreProductService implements  ProductService{
         product.setCategory(category);
 
         return product;
+    }
+
+    private CreateFakeStoreProductRequestDto from(CreateProductRequestDto requestDto) {
+        if (requestDto == null) {
+            return null;
+        }
+        CreateFakeStoreProductRequestDto createProductRequestDto = new CreateFakeStoreProductRequestDto();
+
+        createProductRequestDto.setDescription(requestDto.getDescription());
+        createProductRequestDto.setTitle(requestDto.getTitle());
+        createProductRequestDto.setPrice(requestDto.getPrice());
+        createProductRequestDto.setImage(requestDto.getImage());
+        createProductRequestDto.setCategory(requestDto.getCategoryName());
+
+        return createProductRequestDto;
     }
 }

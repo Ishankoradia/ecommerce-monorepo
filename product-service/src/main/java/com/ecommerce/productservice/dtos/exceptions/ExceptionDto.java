@@ -1,12 +1,12 @@
-package com.ecommerce.productservice.dtos;
+package com.ecommerce.productservice.dtos.exceptions;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ProductNotFoundExceptionDto {
-    private Long productId;
+public class ExceptionDto
+{
     private String message;
     private String details;
 }

@@ -14,4 +14,9 @@ public class ProductNotFoundException extends BaseException {
         super(message, details);
         this.productId = productId;
     }
+
+    public ProductNotFoundException(String message, Long productId) {
+        super(message, "Please provide a valid product id");
+        this.productId = productId;
+    }
 }

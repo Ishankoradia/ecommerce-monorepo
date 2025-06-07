@@ -1,6 +1,5 @@
 package com.ecommerce.productservice.services;
 
-import com.ecommerce.productservice.ProductServiceApplication;
 import com.ecommerce.productservice.dtos.CreateProductRequestDto;
 import com.ecommerce.productservice.exceptions.CategoryNotFoundException;
 import com.ecommerce.productservice.exceptions.ProductNotFoundException;
@@ -8,8 +7,6 @@ import com.ecommerce.productservice.models.Category;
 import com.ecommerce.productservice.models.Product;
 import com.ecommerce.productservice.repositories.CategoryRepository;
 import com.ecommerce.productservice.repositories.ProductRepository;
-import org.springframework.context.annotation.Primary;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,28 +39,73 @@ public class DbProductService implements ProductService {
     }
 
     @Override
-    public Product createProduct(Product product) throws CategoryNotFoundException {
-        Category category = product.getCategory();
-
-        if (category == null) {
-            throw new CategoryNotFoundException("Product cant' be created without category" , "Please select a category");
-        }
-
-        // Check for category with title
-        Optional<Category> categoryOptional = categoryRepository.findByTitle(category.getTitle());
-        if (categoryOptional.isEmpty()) {
-            category = categoryRepository.save(category);
-        } else {
-            category = categoryOptional.get();
-        }
-        product.setCategory(category);
+    public Product createProduct(CreateProductRequestDto createProductRequestDto) throws CategoryNotFoundException, ProductNotFoundException {
+        Product product = from(createProductRequestDto, null);
 
         return productRepository.save(product);
     }
 
     @Override
-    public ResponseEntity<Void> deleteProduct(Long productId) {
+    public Boolean deleteProduct(Long productId) {
         this.productRepository.deleteById(productId);
-        return ResponseEntity.ok().build();
+        return true;
     }
+
+    @Override
+    public Product patchProduct(Long productId, CreateProductRequestDto patchProductRequestDto) throws ProductNotFoundException, CategoryNotFoundException {
+        return from(patchProductRequestDto, productId);
+    }
+
+    @Override
+    public Product replaceProduct(Long productId, CreateProductRequestDto createProductRequestDto) throws ProductNotFoundException, CategoryNotFoundException {
+        Optional<Product> optionalProduct = productRepository.findById(productId);
+        if (optionalProduct.isEmpty()) {
+            throw new ProductNotFoundException("Product not found", "Please try with a different id", productId);
+        }
+        productRepository.delete(optionalProduct.get());
+
+        return from(createProductRequestDto, null);
+    }
+
+
+    private Product from(CreateProductRequestDto requestDto, Long productId) throws CategoryNotFoundException, ProductNotFoundException {
+        if (requestDto.getCategoryName() == null) {
+            throw new CategoryNotFoundException("Product cant' be created without category" , "Please select a category");
+        }
+
+        Category category;
+        Optional<Category> categoryOptional = categoryRepository.findByTitleIgnoreCase(requestDto.getCategoryName());
+        if (categoryOptional.isEmpty()) {
+            category = new Category();
+            category.setTitle(requestDto.getCategoryName());
+            category = categoryRepository.save(category);
+        } else {
+            category = categoryOptional.get();
+        }
+
+        Product product;
+        if (productId != null) {
+            Optional<Product> optionalProduct = productRepository.findById(productId);
+            if (optionalProduct.isPresent()) {
+                product = optionalProduct.get();
+            } else {
+                throw new ProductNotFoundException("Product not found", productId);
+            }
+        } else {
+            product = new Product();
+        }
+
+        product.setTitle(requestDto.getTitle());
+        product.setDescription(requestDto.getDescription());
+        product.setPrice(requestDto.getPrice());
+        product.setImage(requestDto.getImage());
+        product.setCategory(category);
+
+        product = productRepository.save(product);
+
+        return product;
+
+    }
+
+
 }

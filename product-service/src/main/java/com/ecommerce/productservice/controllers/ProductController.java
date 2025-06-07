@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
 
-    private ProductService productService;
+    private final ProductService productService;
 
     public ProductController(@Qualifier("dbProductService") ProductService productService) {
         this.productService = productService;
@@ -31,27 +31,37 @@ public class ProductController {
     }
 
     @GetMapping("/")
-    public List<Product> getAllProducts() {
-        return this.productService.getAllProducts();
+    public ResponseEntity<List<Product>> getAllProducts() {
+        return new ResponseEntity<>(
+                this.productService.getAllProducts(),
+                HttpStatus.OK);
     }
 
     @PostMapping("/")
-    public Product createProduct(@RequestBody Product product) throws CategoryNotFoundException {
-        return this.productService.createProduct(product);
+    public ResponseEntity<Product> createProduct(@RequestBody CreateProductRequestDto payload) throws CategoryNotFoundException, ProductNotFoundException {
+        return new ResponseEntity<>(
+                this.productService.createProduct(payload),
+                HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable("id") Long productId){
-        return this.productService.deleteProduct(productId);
+    public ResponseEntity<Boolean> deleteProduct(@PathVariable("id") Long productId){
+        return new ResponseEntity<>(
+                this.productService.deleteProduct(productId),
+                HttpStatus.OK);
     }
 
     @PatchMapping("/{id}")
-    public Product updateProduct(@PathVariable("id") Long productId, @RequestBody Product product) {
-        return new Product();
+    public ResponseEntity<Product> updateProduct(@PathVariable("id") Long productId, @RequestBody CreateProductRequestDto payload) throws CategoryNotFoundException, ProductNotFoundException {
+        return new ResponseEntity<>(
+                this.productService.patchProduct(productId, payload),
+                HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public Product replaceProduct(@PathVariable("id") Long productId, @RequestBody Product product) {
-        return new Product();
+    public ResponseEntity<Product> replaceProduct(@PathVariable("id") Long productId, @RequestBody CreateProductRequestDto payload) throws CategoryNotFoundException, ProductNotFoundException {
+        return new ResponseEntity<>(
+                this.productService.replaceProduct(productId, payload),
+                HttpStatus.OK);
     }
 }

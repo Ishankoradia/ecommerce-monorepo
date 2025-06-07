@@ -4,7 +4,6 @@ import com.ecommerce.productservice.dtos.CreateProductRequestDto;
 import com.ecommerce.productservice.exceptions.CategoryNotFoundException;
 import com.ecommerce.productservice.exceptions.ProductNotFoundException;
 import com.ecommerce.productservice.models.Product;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -13,7 +12,11 @@ public interface ProductService {
 
     List<Product> getAllProducts();
 
-    Product createProduct(Product product) throws CategoryNotFoundException;
+    Product createProduct(CreateProductRequestDto createProductRequestDto) throws CategoryNotFoundException, ProductNotFoundException;
 
-    ResponseEntity<Void> deleteProduct(Long productId);
+    Boolean deleteProduct(Long productId);
+
+    Product patchProduct(Long productId, CreateProductRequestDto createProductRequestDto) throws ProductNotFoundException, CategoryNotFoundException;
+
+    Product replaceProduct(Long productId, CreateProductRequestDto createProductRequestDto) throws ProductNotFoundException, CategoryNotFoundException;
 }

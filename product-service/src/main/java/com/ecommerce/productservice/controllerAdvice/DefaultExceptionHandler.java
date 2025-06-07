@@ -1,6 +1,6 @@
 package com.ecommerce.productservice.controllerAdvice;
 
-import com.ecommerce.productservice.dtos.ExceptionDto;
+import com.ecommerce.productservice.dtos.exceptions.ExceptionDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

@@ -11,4 +11,6 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     @Override
     void deleteById(Long categoryId);
+
+    <T> Optional<T> findByTitleIgnoreCase(String title);
 }
