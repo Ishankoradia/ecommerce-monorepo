@@ -28,17 +28,11 @@ public class DbProductService implements ProductService {
 
     @Override
     public Product getSingleProduct(Long productId) throws ProductNotFoundException {
-//        Optional<Product> optionalProduct = this.productRepository.findById(productId);
-//        if (optionalProduct.isEmpty()) {
-//            throw new ProductNotFoundException("Product not found", "Please try with a differnet id", productId);
-//        }
-//
-//        return optionalProduct.get();
         return this.productRepository.
                 findById(productId).
                 orElseThrow(() ->
                         new ProductNotFoundException
-                                ("Product not found", "Please try with a differnet id", productId)
+                                ("Product not found", "Please try with a different id", productId)
                 );
     }
 
