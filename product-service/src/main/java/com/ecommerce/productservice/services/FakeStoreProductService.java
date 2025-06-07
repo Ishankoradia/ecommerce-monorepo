@@ -7,6 +7,7 @@ import com.ecommerce.productservice.exceptions.CategoryNotFoundException;
 import com.ecommerce.productservice.exceptions.ProductNotFoundException;
 import com.ecommerce.productservice.models.Category;
 import com.ecommerce.productservice.models.Product;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -16,9 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service("fakeStoreProductService")
+@Primary
 public class FakeStoreProductService implements  ProductService{
     private final RestTemplate client;
-
 
     public FakeStoreProductService(RestTemplate client) {
         this.client = client;

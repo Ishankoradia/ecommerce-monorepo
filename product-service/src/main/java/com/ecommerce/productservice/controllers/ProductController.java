@@ -19,7 +19,8 @@ public class ProductController {
 
     private final ProductService productService;
 
-    public ProductController(@Qualifier("dbProductService") ProductService productService) {
+    //@Qualifier("dbProductService")
+    public ProductController(ProductService productService) {
         this.productService = productService;
     }
 
