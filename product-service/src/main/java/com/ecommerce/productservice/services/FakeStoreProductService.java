@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service("fakeStoreProductService")
-@Primary
 public class FakeStoreProductService implements  ProductService{
     private final RestTemplate client;
 
