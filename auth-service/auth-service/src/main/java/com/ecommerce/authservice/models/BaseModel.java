@@ -1,11 +1,10 @@
 package com.ecommerce.authservice.models;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.util.Date;
 
@@ -17,11 +16,12 @@ public abstract class BaseModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @CreatedDate
+    @Column(updatable = false)
     private Date createdAt;
 
-    private Date lastUpatedAt;
-
-    private String createdBy;
+    @LastModifiedDate
+    private Date updatedAt;
 
     private UserState state;
 }
